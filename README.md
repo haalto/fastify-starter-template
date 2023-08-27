@@ -10,6 +10,7 @@ Another one starter template for Fastify. This one is opinionated and uses Purif
 - Purify-ts
 - Local docker-compose setup
 - Dependency injection
+- CI/CD pipeline (GitHub Actions)
 
 ## Todo
 
