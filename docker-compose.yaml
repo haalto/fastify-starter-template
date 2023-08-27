@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:alpine
+    environment:
+      POSTGRES_DB: fastify-db
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
+    ports:
+      - 5435:5432
+
+  redis:
+    image: redis:latest
+    command: redis-server
+    volumes:
+      - redis:/var/lib/redis
+      - redis-config:/usr/local/etc/redis/redis.conf
+    ports:
+      - 6379:6379
