@@ -10,6 +10,10 @@ export interface Config {
     host: string;
     port: number;
   };
+  redis: {
+    host: string;
+    port: number;
+  };
 }
 
 const envCodec = Codec.interface({
@@ -19,6 +23,8 @@ const envCodec = Codec.interface({
   DB_PASSWORD: string,
   DB_HOST: string,
   DB_PORT: string,
+  REDIS_HOST: string,
+  REDIS_PORT: string,
 });
 
 export const getConfig = (): Either<Error, Config> => {
@@ -36,7 +42,11 @@ export const getConfig = (): Either<Error, Config> => {
           host: env.DB_HOST,
           port: parseInt(env.DB_PORT, 10),
         },
-      })
+        redis: {
+          host: env.REDIS_HOST,
+          port: parseInt(env.REDIS_PORT, 10),
+        },
+      }),
     )
     .join();
 };

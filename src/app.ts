@@ -6,7 +6,7 @@ import { configureRoutes } from "./routes/routes";
 import { TodoService } from "./services/todoService";
 
 export interface Components {
-  TodoService: TodoService;
+  todoService: TodoService;
 }
 
 export const app = (
@@ -15,7 +15,7 @@ export const app = (
   opts?: FastifyServerOptions
 ) => {
   const app = Fastify(opts);
-  configurePlugins(app, config);
+  configurePlugins(app);
   configureRoutes(app, components);
   return app;
 };

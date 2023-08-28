@@ -1,14 +1,14 @@
 import { FastifyInstance } from "fastify";
 import { getTodoController } from "../controllers/todoController";
-import { todoCodec, todoListCodec } from "../codecs/todo";
+import { newTodoCodec, todoCodec, todoListCodec } from "../codecs/todo";
 import { Components } from "../app";
 
 export const todoRoutes =
-  (components: Components) => (server: FastifyInstance) => {
-    const todoService = components.TodoService;
+  (components: Components) => (app: FastifyInstance) => {
+    const todoService = components.todoService;
     const todoController = getTodoController(todoService);
 
-    server.get("/external", {
+    app.get("/", {
       schema: {
         response: {
           200: todoListCodec.schema(),
@@ -17,7 +17,7 @@ export const todoRoutes =
       handler: todoController.getTodos,
     });
 
-    server.get("/external/:id", {
+    app.get("/:id", {
       schema: {
         params: {
           type: "object",
@@ -32,5 +32,15 @@ export const todoRoutes =
       handler: todoController.getTodoById,
     });
 
-    return server;
+    app.post("/", {
+      schema: {
+        body: newTodoCodec.schema(),
+        response: {
+          201: todoCodec.schema(),
+        },
+      },
+      handler: todoController.createTodo,
+    });
+
+    return app;
   };

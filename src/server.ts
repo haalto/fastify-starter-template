@@ -2,20 +2,28 @@ import pino from "pino";
 import { app } from "./app";
 import { getConfig } from "./config";
 import { getTodoService } from "./services/todoService";
+import { migrateToLatest } from "./migrator";
+import { createCache } from "./data-layer/cache";
+import { createDb } from "./data-layer/db";
 
 const start = () => {
   const config = getConfig();
+  const logger = pino();
 
   if (config.isLeft()) {
-    console.error(config.extract());
+    logger.error(config.extract());
     process.exit(1);
   }
 
-  config.map((config) => {
-    const logger = pino();
-    const todoService = getTodoService(logger);
+  config.map(async (config) => {
+    await migrateToLatest(logger, config);
+
+    const db = createDb(config);
+    const cache = createCache(config);
+
+    const todoService = getTodoService(logger, db, cache);
     const components = {
-      TodoService: todoService,
+      todoService,
     };
 
     const server = app(config, components, { logger: logger });

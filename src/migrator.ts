@@ -8,18 +8,25 @@ import {
   FileMigrationProvider,
 } from "kysely";
 import { Config } from "./config";
+import { Logger } from "pino";
 
 /**
  * From https://kysely.dev/docs/migrations
  */
-async function migrateToLatest(config: Config) {
-  const db = new Kysely({
-    dialect: new PostgresDialect({
-      pool: new Pool({
-        host: "localhost",
-        database: "kysely_test",
-      }),
+export async function migrateToLatest(logger: Logger, config: Config) {
+  const dialect = new PostgresDialect({
+    pool: new Pool({
+      database: config.db.name,
+      host: config.db.host,
+      user: config.db.user,
+      password: config.db.password,
+      port: config.db.port,
+      max: 10,
     }),
+  });
+
+  const db = new Kysely({
+    dialect,
   });
 
   const migrator = new Migrator({
@@ -36,15 +43,15 @@ async function migrateToLatest(config: Config) {
 
   results?.forEach((it) => {
     if (it.status === "Success") {
-      console.log(`migration "${it.migrationName}" was executed successfully`);
+      logger.info(`migration "${it.migrationName}" was executed successfully`);
     } else if (it.status === "Error") {
-      console.error(`failed to execute migration "${it.migrationName}"`);
+      logger.error(`failed to execute migration "${it.migrationName}"`);
     }
   });
 
   if (error) {
-    console.error("failed to migrate");
-    console.error(error);
+    logger.error("failed to migrate");
+    logger.error(error);
     process.exit(1);
   }
 

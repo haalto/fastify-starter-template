@@ -1,11 +1,9 @@
 import { FastifyInstance } from "fastify";
 import fastifySensible from "@fastify/sensible";
-import fastifyAuth0Verify from "fastify-auth0-verify";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
-import { Config } from "./config";
 
-export const configurePlugins = (app: FastifyInstance, config: Config) => {
+export const configurePlugins = (app: FastifyInstance) => {
   app.register(fastifySensible);
 
   /**

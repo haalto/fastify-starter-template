@@ -4,7 +4,7 @@ import { Components } from "../app";
 
 export const configureRoutes = (
   app: FastifyInstance,
-  components: Components
+  components: Components,
 ) => {
   app.register(todoRoutes(components), { prefix: "/api/todos" });
 };

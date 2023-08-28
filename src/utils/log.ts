@@ -1,7 +1,7 @@
-import { FastifyBaseLogger } from "fastify";
+import { Logger } from "pino";
 
 export const logAndReturnError =
-  (logger: FastifyBaseLogger) => (error: unknown, logMessage: string) => {
-    logger.error(logMessage, error);
+  (logger: Logger) => (error: unknown, logMessage?: string) => {
+    logger.error(logMessage ?? "", error);
     return new Error(logMessage);
   };
