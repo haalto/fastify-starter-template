@@ -7,13 +7,13 @@ import { Database } from "../data-layer/dbTypes";
 import { Cache } from "../data-layer/cache";
 import { Logger } from "pino";
 
-interface TodoService {
+export interface TodoService {
   listTodos: () => EitherAsync<Error, Todo[]>;
   findTodoById: (id: number) => EitherAsync<Error, Maybe<Todo>>;
   createTodo: (newTodo: NewTodo) => EitherAsync<Error, Todo>;
 }
 
-const getTodoService = (
+export const createTodoService = (
   logger: Logger,
   db: Kysely<Database>,
   cache: Cache
@@ -105,5 +105,3 @@ const getTodoService = (
   };
   return { listTodos, findTodoById, createTodo };
 };
-
-export { TodoService, getTodoService };

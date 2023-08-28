@@ -1,7 +1,7 @@
 import pino from "pino";
 import { app } from "./app";
 import { getConfig } from "./config";
-import { getTodoService } from "./services/todoService";
+import { createTodoService } from "./services/todoService";
 import { migrateToLatest } from "./migrator";
 import { createCache } from "./data-layer/cache";
 import { createDb } from "./data-layer/db";
@@ -20,13 +20,12 @@ const start = () => {
 
     const db = createDb(config);
     const cache = createCache(config);
-
-    const todoService = getTodoService(logger, db, cache);
+    const todoService = createTodoService(logger, db, cache);
     const components = {
       todoService,
     };
 
-    const server = app(config, components, { logger: logger });
+    const server = app(components, { logger: logger });
     server.listen({ port: config.port }, (error, address) => {
       if (error) {
         server.log.error(error);
