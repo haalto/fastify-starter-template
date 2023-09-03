@@ -1,8 +1,8 @@
 import { FastifyInstance } from "fastify";
 import { createTestAppWithDb } from "./setup";
+jest.setTimeout(30000);
 
 describe("Todo API integration tests", () => {
-  jest.setTimeout(30000);
   let app: FastifyInstance;
   let shutdown: () => Promise<void>;
 
