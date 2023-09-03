@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { getTodoController } from "../controllers/todoController";
 import {
   newTodoBodySchema,
+  todoPartialUpdateBodySchema,
   todoResponseSchema,
   todosResponseSchema,
 } from "../codecs/todo";
@@ -55,6 +56,22 @@ export const todoRoutes =
           },
         },
         body: newTodoBodySchema,
+        response: {
+          200: todoResponseSchema,
+        },
+      },
+      handler: todoController.updateTodo,
+    });
+
+    app.patch("/:id", {
+      schema: {
+        params: {
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+        },
+        body: todoPartialUpdateBodySchema,
         response: {
           200: todoResponseSchema,
         },

@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { TodoService } from "../services/todoService";
-import { NewTodo } from "../codecs/todo";
+import { NewTodo, TodoPartialUpdate } from "../codecs/todo";
 
 export const getTodoController = (todoService: TodoService) => {
   const getTodos = async (req: FastifyRequest, res: FastifyReply) => {
@@ -84,5 +84,34 @@ export const getTodoController = (todoService: TodoService) => {
       );
   };
 
-  return { getTodos, getTodoById, createTodo, deleteTodo, updateTodo };
+  const updateTodoPartially = async (
+    req: FastifyRequest<{ Params: { id: number }; Body: TodoPartialUpdate }>,
+    res: FastifyReply
+  ) => {
+    const { title, completed } = req.body;
+    const todo = await todoService.partialUpdateTodo(req.params.id, {
+      title,
+      completed,
+    });
+    todo
+      .mapLeft((error) => {
+        req.log.error(error);
+        res.internalServerError();
+      })
+      .map((todo) =>
+        todo.caseOf({
+          Just: (todo) => res.send(todo),
+          Nothing: () => res.notFound(),
+        })
+      );
+  };
+
+  return {
+    getTodos,
+    getTodoById,
+    createTodo,
+    deleteTodo,
+    updateTodo,
+    updateTodoPartially,
+  };
 };

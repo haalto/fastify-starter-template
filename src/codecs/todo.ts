@@ -6,6 +6,7 @@ import {
   GetType,
   number,
   string,
+  optional,
 } from "purify-ts/Codec";
 
 export const todoCodec = Codec.interface({
@@ -20,7 +21,14 @@ export const newTodoCodec = Codec.interface({
   completed: boolean,
 });
 
+export const todoPartialUpdateCodec = Codec.interface({
+  title: optional(string),
+  completed: optional(boolean),
+});
+
 export type NewTodo = GetType<typeof newTodoCodec>;
+
+export type TodoPartialUpdate = GetType<typeof todoPartialUpdateCodec>;
 
 export type Todo = GetType<typeof todoCodec>;
 
@@ -31,3 +39,5 @@ export const todoResponseSchema = todoCodec.schema();
 export const todosResponseSchema = array(todoCodec).schema();
 
 export const newTodoBodySchema = newTodoCodec.schema();
+
+export const todoPartialUpdateBodySchema = todoPartialUpdateCodec.schema();

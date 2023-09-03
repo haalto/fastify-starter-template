@@ -1,11 +1,18 @@
 import { EitherAsync } from "purify-ts/EitherAsync";
-import { NewTodo, Todo, todoCodec, todoListCodec } from "../codecs/todo";
+import {
+  NewTodo,
+  Todo,
+  TodoPartialUpdate,
+  todoCodec,
+  todoListCodec,
+} from "../codecs/todo";
 import { Just, Maybe, Nothing, Right } from "purify-ts";
 import { Kysely } from "kysely";
 import { Database, TodoUpdateDb } from "../data-layer/dbTypes";
 import { Cache } from "../data-layer/cache";
 import { Logger } from "pino";
 import { handleUnknownError } from "../utils/errors";
+import { getNonEmptyKeyValuePairs } from "../utils/data";
 
 export interface TodoService {
   listTodos: () => EitherAsync<Error, Todo[]>;
@@ -15,6 +22,10 @@ export interface TodoService {
   updateTodo: (
     id: number,
     updatedTodo: TodoUpdateDb
+  ) => EitherAsync<Error, Maybe<Todo>>;
+  partialUpdateTodo: (
+    id: number,
+    updatedTodo: TodoPartialUpdate
   ) => EitherAsync<Error, Maybe<Todo>>;
 }
 
@@ -160,5 +171,43 @@ export const createTodoService = (
     });
   };
 
-  return { listTodos, findTodoById, createTodo, deleteTodo, updateTodo };
+  /**
+   * Partially updates a todo. Only non-empty values are updated.
+   */
+  const partialUpdateTodo = (id: number, updateTodo: TodoUpdateDb) => {
+    logger.info("Partially updating todo with id %d", id);
+    return EitherAsync<Error, Maybe<Todo>>(async ({ liftEither, throwE }) => {
+      const { title, completed } = updateTodo;
+      const nonEmptyValues = getNonEmptyKeyValuePairs({ title, completed });
+
+      try {
+        const updatedTodo = await db
+          .updateTable("todos")
+          .set(nonEmptyValues)
+          .where("id", "=", id)
+          .returning(["id", "title", "completed", "createdAt"])
+          .executeTakeFirst();
+
+        if (!updatedTodo) {
+          return liftEither(Right(Nothing));
+        }
+
+        logger.info("Todo updated");
+        cache.invalidate("todos");
+        cache.set(`todos:${updatedTodo.id}`, updatedTodo);
+        return liftEither(Right(Just(updatedTodo)));
+      } catch (error) {
+        return throwE(handleUnknownError(error));
+      }
+    });
+  };
+
+  return {
+    listTodos,
+    findTodoById,
+    createTodo,
+    deleteTodo,
+    updateTodo,
+    partialUpdateTodo,
+  };
 };

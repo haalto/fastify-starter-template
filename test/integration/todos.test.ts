@@ -206,4 +206,33 @@ describe("Todo API integration tests", () => {
       createdAt: expect.any(String),
     });
   });
+
+  it("should mark a todo as completed", async () => {
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/api/todos",
+      payload: {
+        title: "test todo",
+        completed: false,
+      },
+    });
+
+    const todoId = createResponse.json().id;
+
+    const response = await app.inject({
+      method: "PATCH",
+      url: `/api/todos/${todoId}`,
+      payload: {
+        completed: true,
+      },
+    });
+
+    expect(response.statusCode).toEqual(200);
+    expect(response.json()).toEqual({
+      id: todoId,
+      title: "test todo",
+      completed: true,
+      createdAt: expect.any(String),
+    });
+  });
 });
