@@ -1,5 +1,7 @@
 # Opionated Fastify starter template
 
+![example workflow](https://github.com/haalto/fastify-starter-template/actions/workflows/ci.yaml/badge.svg)
+
 Another starter template for Node backend with Fastify. This one is opinionated and uses Purify-ts for functional programming. This template is meant to be used as a starting point for new projects. It has all the basic stuff like CI/CD pipeline, Docker setup, integration tests, etc. It also has some basic stuff like logging, error handling, etc.
 
 It's not meant to be a full blown production ready template, but it should be a good starting point for new small to mid sized projects.
