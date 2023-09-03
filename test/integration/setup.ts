@@ -11,7 +11,7 @@ import { migrateToLatest } from "../../src/migrator";
 import { createFakeCache } from "../../src/data-layer/cache";
 
 const extractDbConfigFromContainer = (
-  container: StartedPostgreSqlContainer
+  container: StartedPostgreSqlContainer,
 ) => {
   return {
     host: container.getHost(),

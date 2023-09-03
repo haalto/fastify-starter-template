@@ -47,7 +47,7 @@ export const getConfig = (): Either<Error, Config> => {
           host: env.REDIS_HOST,
           port: parseInt(env.REDIS_PORT, 10),
         },
-      })
+      }),
     )
     .join();
 };

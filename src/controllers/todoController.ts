@@ -15,7 +15,7 @@ export const getTodoController = (todoService: TodoService) => {
 
   const getTodoById = async (
     req: FastifyRequest<{ Params: { id: number } }>,
-    res: FastifyReply
+    res: FastifyReply,
   ) => {
     const todo = await todoService.findTodoById(req.params.id);
     todo
@@ -27,13 +27,13 @@ export const getTodoController = (todoService: TodoService) => {
         todo.caseOf({
           Just: (todo) => res.send(todo),
           Nothing: () => res.notFound(),
-        })
+        }),
       );
   };
 
   const createTodo = async (
     req: FastifyRequest<{ Body: NewTodo }>,
-    res: FastifyReply
+    res: FastifyReply,
   ) => {
     const todo = await todoService.createTodo(req.body);
     todo

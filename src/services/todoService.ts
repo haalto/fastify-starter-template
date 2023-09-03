@@ -16,7 +16,7 @@ export interface TodoService {
 export const createTodoService = (
   logger: Logger,
   db: Kysely<Database>,
-  cache: Cache
+  cache: Cache,
 ): TodoService => {
   const listTodos = () => {
     logger.info("Fetching todos");
