@@ -1,16 +1,16 @@
 import { CamelCasePlugin, Kysely, PostgresDialect } from "kysely";
-import { Config } from "../config";
 import { Pool } from "pg";
 import { Database } from "./dbTypes";
+import { DbConfig } from "../config";
 
-export const createDb = (config: Config) => {
+export const createDb = (config: DbConfig) => {
   const dialect = new PostgresDialect({
     pool: new Pool({
-      database: config.db.name,
-      host: config.db.host,
-      user: config.db.user,
-      password: config.db.password,
-      port: config.db.port,
+      database: config.name,
+      host: config.host,
+      user: config.user,
+      password: config.password,
+      port: config.port,
       max: 10,
     }),
   });

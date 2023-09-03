@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon ./src/server.ts",
     "build": "tsc",
-    "test": "jest --watchAll",
+    "test": "jest --watchAll --detectOpenHandles",
     "test:ci": "jest",
     "format": "prettier --write .",
     "lint": "eslint . --ext .ts",
@@ -16,6 +16,7 @@
   "author": "haalto",
   "license": "ISC",
   "devDependencies": {
+    "@testcontainers/postgresql": "^10.2.1",
     "@types/jest": "^29.4.0",
     "@types/pg": "^8.10.2",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
@@ -24,6 +25,7 @@
     "eslint-plugin-prettier": "^5.0.0",
     "nodemon": "^3.0.1",
     "prettier": "3.0.2",
+    "testcontainers": "^10.2.1",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"

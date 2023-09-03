@@ -16,16 +16,18 @@ const start = () => {
   }
 
   config.map(async (config) => {
-    await migrateToLatest(logger, config);
+    await migrateToLatest(logger, config.db);
 
-    const db = createDb(config);
+    const db = createDb(config.db);
     const cache = createCache(config);
     const todoService = createTodoService(logger, db, cache);
     const components = {
       todoService,
     };
 
-    const server = app(components, { logger: logger });
+    const server = app(components, {
+      logger: logger,
+    });
     server.listen({ port: config.port }, (error, address) => {
       if (error) {
         server.log.error(error);

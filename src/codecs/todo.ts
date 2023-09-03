@@ -25,3 +25,9 @@ export type NewTodo = GetType<typeof newTodoCodec>;
 export type Todo = GetType<typeof todoCodec>;
 
 export const todoListCodec = array(todoCodec);
+
+export const todoResponseSchema = todoCodec.schema();
+
+export const todosResponseSchema = array(todoCodec).schema();
+
+export const newTodoBodySchema = newTodoCodec.schema();

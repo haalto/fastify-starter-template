@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "es2022",
     "module": "commonjs",
-    "lib": ["es2020"],
-    "moduleResolution": "node",
+    "lib": ["es2022"],
+    "moduleResolution": "NodeNext",
     "outDir": "./build",
     "strict": true,
     "strictPropertyInitialization": false,
     "sourceMap": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "typeRoots": ["./node_modules/@types", "./src/@types"],
-    "esModuleInterop": true
+    "esModuleInterop": false,
+    "skipLibCheck": true
   }
 }

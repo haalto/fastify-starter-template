@@ -1,11 +1,11 @@
 import { EitherAsync } from "purify-ts/EitherAsync";
 import { NewTodo, Todo, todoCodec, todoListCodec } from "../codecs/todo";
 import { Just, Maybe, Nothing, Right } from "purify-ts";
-import { logAndReturnError } from "../utils/log";
 import { Kysely } from "kysely";
 import { Database } from "../data-layer/dbTypes";
 import { Cache } from "../data-layer/cache";
 import { Logger } from "pino";
+import { handleUnknownError } from "../utils/errors";
 
 export interface TodoService {
   listTodos: () => EitherAsync<Error, Todo[]>;
@@ -18,8 +18,6 @@ export const createTodoService = (
   db: Kysely<Database>,
   cache: Cache
 ): TodoService => {
-  const logError = logAndReturnError(logger);
-
   const listTodos = () => {
     logger.info("Fetching todos");
     return EitherAsync<Error, Todo[]>(async ({ liftEither, throwE }) => {
@@ -42,8 +40,7 @@ export const createTodoService = (
         });
         return liftEither(Right(result));
       } catch (error) {
-        logError(error);
-        return throwE(new Error("Error fetching todos"));
+        return throwE(handleUnknownError(error));
       }
     });
   };
@@ -57,6 +54,7 @@ export const createTodoService = (
         const result = await todoCodec.decode(cachedTodo).caseOf({
           Right: async (todo) => {
             logger.info("Todo fetched from cache");
+            logger.debug(todo);
             return Just(todo);
           },
           Left: async () => {
@@ -70,14 +68,14 @@ export const createTodoService = (
               return Nothing;
             }
             cache.set(`todos:${id}`, todo);
-            logger.info("Todo fetched from database");
+            logger.info("Todo fetched from database", todo);
+            logger.info(todo);
             return Just(todo);
           },
         });
         return liftEither(Right(result));
       } catch (error) {
-        logError(error);
-        return throwE(new Error("Error fetching todos"));
+        return throwE(handleUnknownError(error));
       }
     });
   };
@@ -85,21 +83,24 @@ export const createTodoService = (
   const createTodo = (newTodo: NewTodo) => {
     logger.info("Creating a new todo");
     return EitherAsync<Error, Todo>(async ({ liftEither, throwE }) => {
+      const { title, completed } = newTodo;
       try {
         const todo = await db
           .insertInto("todos")
-          .values(newTodo)
+          .values({ title, completed })
           .returning(["id", "title", "completed", "createdAt"])
           .executeTakeFirst();
         if (!todo) {
-          return throwE(new Error("Error creating todo"));
+          return throwE(new Error("Todo was not created"));
         }
+
+        logger.info("Todo created");
+
         cache.invalidate("todos");
         cache.set(`todos:${todo.id}`, todo);
         return liftEither(Right(todo));
       } catch (error) {
-        logError(error);
-        return throwE(new Error("Error creating todo"));
+        return throwE(handleUnknownError(error));
       }
     });
   };

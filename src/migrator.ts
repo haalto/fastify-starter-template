@@ -7,20 +7,20 @@ import {
   PostgresDialect,
   FileMigrationProvider,
 } from "kysely";
-import { Config } from "./config";
+import { DbConfig } from "./config";
 import { Logger } from "pino";
 
 /**
  * From https://kysely.dev/docs/migrations
  */
-export async function migrateToLatest(logger: Logger, config: Config) {
+export async function migrateToLatest(logger: Logger, config: DbConfig) {
   const dialect = new PostgresDialect({
     pool: new Pool({
-      database: config.db.name,
-      host: config.db.host,
-      user: config.db.user,
-      password: config.db.password,
-      port: config.db.port,
+      database: config.name,
+      host: config.host,
+      user: config.user,
+      password: config.password,
+      port: config.port,
       max: 10,
     }),
   });

@@ -1,6 +1,10 @@
 import { FastifyInstance } from "fastify";
 import { getTodoController } from "../controllers/todoController";
-import { newTodoCodec, todoCodec, todoListCodec } from "../codecs/todo";
+import {
+  newTodoBodySchema,
+  todoResponseSchema,
+  todosResponseSchema,
+} from "../codecs/todo";
 import { Components } from "../app";
 
 export const todoRoutes =
@@ -11,7 +15,7 @@ export const todoRoutes =
     app.get("/", {
       schema: {
         response: {
-          200: todoListCodec.schema(),
+          200: todosResponseSchema,
         },
       },
       handler: todoController.getTodos,
@@ -26,7 +30,7 @@ export const todoRoutes =
           },
         },
         response: {
-          200: todoCodec.schema(),
+          200: todoResponseSchema,
         },
       },
       handler: todoController.getTodoById,
@@ -34,9 +38,9 @@ export const todoRoutes =
 
     app.post("/", {
       schema: {
-        body: newTodoCodec.schema(),
+        body: newTodoBodySchema,
         response: {
-          201: todoCodec.schema(),
+          201: todoResponseSchema,
         },
       },
       handler: todoController.createTodo,

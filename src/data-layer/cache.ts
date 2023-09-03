@@ -35,3 +35,36 @@ export const createCache = (config: Config): Cache => {
 
   return { set, invalidate, get };
 };
+
+/**
+ * This is a fake cache implementation that uses a Map instead of Redis.
+ */
+export const createFakeCache = (): Cache => {
+  const map = new Map<string, string>();
+
+  const get = async (key: string) => {
+    const value = map.get(key);
+
+    if (!value) {
+      return null;
+    }
+
+    const parsed = JSON.parse(value);
+    return parsed;
+  };
+
+  const set = async <T extends object>(key: string, value: T | Array<T>) => {
+    const valueString = JSON.stringify(value);
+    map.set(key, valueString);
+  };
+
+  const invalidate = async (key: string) => {
+    map.delete(key);
+  };
+
+  return {
+    get,
+    set,
+    invalidate,
+  };
+};

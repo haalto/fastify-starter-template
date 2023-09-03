@@ -1,20 +1,21 @@
 import { config } from "dotenv";
 import { Codec, Either, Right, string } from "purify-ts";
 
-export interface Config {
+export type DbConfig = {
+  host: string;
   port: number;
-  db: {
-    name: string;
-    user: string;
-    password: string;
-    host: string;
-    port: number;
-  };
+  name: string;
+  user: string;
+  password: string;
+};
+export type Config = {
+  port: number;
+  db: DbConfig;
   redis: {
     host: string;
     port: number;
   };
-}
+};
 
 const envCodec = Codec.interface({
   PORT: string,
@@ -46,7 +47,7 @@ export const getConfig = (): Either<Error, Config> => {
           host: env.REDIS_HOST,
           port: parseInt(env.REDIS_PORT, 10),
         },
-      }),
+      })
     )
     .join();
 };
