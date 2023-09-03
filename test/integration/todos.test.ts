@@ -149,4 +149,61 @@ describe("Todo API integration tests", () => {
 
     expect(response.statusCode).toEqual(400);
   });
+
+  it("should delete a todo", async () => {
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/api/todos",
+      payload: {
+        title: "test todo",
+        completed: false,
+      },
+    });
+
+    const todoId = createResponse.json().id;
+
+    const response = await app.inject({
+      method: "DELETE",
+      url: `/api/todos/${todoId}`,
+    });
+
+    expect(response.statusCode).toEqual(204);
+
+    const getResponse = await app.inject({
+      method: "GET",
+      url: `/api/todos/${todoId}`,
+    });
+
+    expect(getResponse.statusCode).toEqual(404);
+  });
+
+  it("should update a todo", async () => {
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/api/todos",
+      payload: {
+        title: "test todo",
+        completed: false,
+      },
+    });
+
+    const todoId = createResponse.json().id;
+
+    const response = await app.inject({
+      method: "PUT",
+      url: `/api/todos/${todoId}`,
+      payload: {
+        title: "updated todo",
+        completed: true,
+      },
+    });
+
+    expect(response.statusCode).toEqual(200);
+    expect(response.json()).toEqual({
+      id: todoId,
+      title: "updated todo",
+      completed: true,
+      createdAt: expect.any(String),
+    });
+  });
 });
