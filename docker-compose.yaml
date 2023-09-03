@@ -1,6 +1,29 @@
 version: "3.8"
 
 services:
+  api:
+    build:
+      context: .
+      target: development
+    environment:
+      - NODE_ENV=development
+      - PORT=4000
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    expose:
+      - 4000
+    ports:
+      - 4000:4000
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - postgres
+      - redis
   postgres:
     image: postgres:alpine
     environment:

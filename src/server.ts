@@ -28,7 +28,7 @@ const start = () => {
     const server = app(components, {
       logger: logger,
     });
-    server.listen({ port: config.port }, (error, address) => {
+    server.listen({ port: config.port, host: "0.0.0.0" }, (error, address) => {
       if (error) {
         server.log.error(error);
         process.exit(1);
